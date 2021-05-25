@@ -1,54 +1,53 @@
 ﻿
 namespace Cambios
 {
-    using Modelos;
-    using Newtonsoft.Json;
+    using Cambios.Modelos;
+    using Cambios.Modelos.Servicos;
     using System;
     using System.Collections.Generic;
-    using System.Net.Http;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
 
     public partial class Form1 : Form
     {
+
+        #region Atributos
+        //definir um atributo Network service
+        private NetworkService networService;
+
+        //definir um atributo ApiService
+        private ApiService apiService;
+
+        #endregion
+
+        public List<Rate> Rates { get; set; } = new List<Rate>();
+
         public Form1()
         {
             InitializeComponent();
+            networService = new NetworkService(); //Estanciar objeto
+            apiService = new ApiService();
             LoadRates();//para criar as taxas
         }
 
         private async void LoadRates()
         {
-            //bool load;//foi carregado ou não
+          
+            lbl_resultados.Text = "A atualizar taxas...";
 
-            ProgressBar1.Value = 0;
+            var connection = networService.CheckConnection();
 
-            //para carregar a API via conexão
-            var client = new HttpClient(); //crio http para fazer ligação externa
-            client.BaseAddress = new Uri("http://cambios.somee.com"); //por o endereço
-                                                                      //base da API que podemos ir buscar ao postman
-
-            //controlador da API - uma pasta onde tenho os rates
-            //tarefa assincrona, por isto o método vai passar a ser private async para
-            //aplicação não deixe de estar a correr qdo carrega as taxas  
-            //vamos guardar o resultado numa variavel
-            var response = await client.GetAsync("/api/Rates");
-
-            //variável objecto que vai ficar a espera da resposta que vem de cima
-            //carrego os resultados no formato de uma string pra dentro do objeto result
-            var result = await response.Content.ReadAsStringAsync(); //conteudo lido como uma string
-
-            //para o caso de alguma coisa correr mal
-            if (!response.IsSuccessStatusCode)
+            if (!connection.IsSucess) // se não tiver conexão
             {
-                MessageBox.Show(response.ReasonPhrase); //tras o erro que se passou
-                return; //se correr mal, sai
+                MessageBox.Show(connection.Message);
+                return; //saí do método e não entra na API
             }
-
-            //se correu tudo bem
-            var rates = JsonConvert.DeserializeObject<List<Rate>>(result);
-
-
-            cb_origem.DataSource = rates; //lista rates
+            else
+            {
+                await LoadApiRates();
+            }
+            
+            cb_origem.DataSource = Rates; //lista rates
             //para aparecer os nomes adequadamente vamos a class rates
             //criar um override ou então podemos fazer da seguinte forma:
             cb_origem.DisplayMember = "Name";
@@ -57,13 +56,25 @@ namespace Cambios
             cb_destino.BindingContext = new BindingContext(); //limpo a ligação de uma para a outra
 
             //agora vamos fazer para a cb_destino
-            cb_destino.DataSource = rates;
+            cb_destino.DataSource = Rates;
             cb_destino.DisplayMember = "Name";
 
             //desta forma a origem e destino vão apresentar a mesma moeda. 
             //Para resolver isto vamos fazer um cb_destino.BindingContext na linha 56
 
             ProgressBar1.Value = 100;
+
+            lbl_resultados.Text = "Taxas carregadas...";
+        }
+
+        private async Task LoadApiRates() //porque na API tbm foi defenido como async
+        {
+            ProgressBar1.Value = 0; // aqui que ele vai carregar se não tiver conexão a internet
+
+            var response = await apiService.GetRates("http://cambios.somee.com", "/api/Rates");
+
+            Rates = (List<Rate>)response.Result;
+            
         }
     }
 }

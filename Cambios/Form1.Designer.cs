@@ -36,7 +36,7 @@ namespace Cambios
             this.cb_origem = new System.Windows.Forms.ComboBox();
             this.cb_destino = new System.Windows.Forms.ComboBox();
             this.btn_converter = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lbl_resultados = new System.Windows.Forms.Label();
             this.lbl_status = new System.Windows.Forms.Label();
             this.ProgressBar1 = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
@@ -104,15 +104,15 @@ namespace Cambios
             this.btn_converter.Text = "Converter";
             this.btn_converter.UseVisualStyleBackColor = true;
             // 
-            // label3
+            // lbl_resultados
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label3.Location = new System.Drawing.Point(259, 352);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(441, 28);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Escolha um valor, moeda de origem e destino";
+            this.lbl_resultados.AutoSize = true;
+            this.lbl_resultados.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.lbl_resultados.Location = new System.Drawing.Point(259, 352);
+            this.lbl_resultados.Name = "lbl_resultados";
+            this.lbl_resultados.Size = new System.Drawing.Size(441, 28);
+            this.lbl_resultados.TabIndex = 7;
+            this.lbl_resultados.Text = "Escolha um valor, moeda de origem e destino";
             // 
             // lbl_status
             // 
@@ -137,7 +137,7 @@ namespace Cambios
             this.ClientSize = new System.Drawing.Size(925, 490);
             this.Controls.Add(this.ProgressBar1);
             this.Controls.Add(this.lbl_status);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.lbl_resultados);
             this.Controls.Add(this.btn_converter);
             this.Controls.Add(this.cb_destino);
             this.Controls.Add(this.cb_origem);
@@ -163,7 +163,7 @@ namespace Cambios
         private System.Windows.Forms.ComboBox cb_origem;
         private System.Windows.Forms.ComboBox cb_destino;
         private System.Windows.Forms.Button btn_converter;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lbl_resultados;
         private System.Windows.Forms.Label lbl_status;
         private System.Windows.Forms.ProgressBar ProgressBar1;
     }
