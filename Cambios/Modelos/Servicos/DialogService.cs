@@ -1,6 +1,13 @@
-﻿namespace Cambios.Modelos.Servicos
+﻿using System.Windows.Forms;
+
+namespace Cambios.Modelos.Servicos
 {
-    class DialogService
+    public class DialogService
     {
+        public void ShowMessage(string title, string message)
+        {
+            MessageBox.Show(message, title);
+        }
+
     }
 }

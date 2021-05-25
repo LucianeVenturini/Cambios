@@ -39,6 +39,7 @@ namespace Cambios
             this.lbl_resultados = new System.Windows.Forms.Label();
             this.lbl_status = new System.Windows.Forms.Label();
             this.ProgressBar1 = new System.Windows.Forms.ProgressBar();
+            this.btn_trocar = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lbl_valor
@@ -96,6 +97,7 @@ namespace Cambios
             // 
             // btn_converter
             // 
+            this.btn_converter.Enabled = false;
             this.btn_converter.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btn_converter.Location = new System.Drawing.Point(760, 51);
             this.btn_converter.Name = "btn_converter";
@@ -103,6 +105,7 @@ namespace Cambios
             this.btn_converter.TabIndex = 6;
             this.btn_converter.Text = "Converter";
             this.btn_converter.UseVisualStyleBackColor = true;
+            this.btn_converter.Click += new System.EventHandler(this.btn_converter_Click);
             // 
             // lbl_resultados
             // 
@@ -130,11 +133,23 @@ namespace Cambios
             this.ProgressBar1.Size = new System.Drawing.Size(338, 34);
             this.ProgressBar1.TabIndex = 9;
             // 
+            // btn_trocar
+            // 
+            this.btn_trocar.Enabled = false;
+            this.btn_trocar.Image = global::Cambios.Properties.Resources.change;
+            this.btn_trocar.Location = new System.Drawing.Point(760, 184);
+            this.btn_trocar.Name = "btn_trocar";
+            this.btn_trocar.Size = new System.Drawing.Size(109, 99);
+            this.btn_trocar.TabIndex = 10;
+            this.btn_trocar.UseVisualStyleBackColor = true;
+            this.btn_trocar.Click += new System.EventHandler(this.btn_trocar_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(925, 490);
+            this.Controls.Add(this.btn_trocar);
             this.Controls.Add(this.ProgressBar1);
             this.Controls.Add(this.lbl_status);
             this.Controls.Add(this.lbl_resultados);
@@ -166,6 +181,7 @@ namespace Cambios
         private System.Windows.Forms.Label lbl_resultados;
         private System.Windows.Forms.Label lbl_status;
         private System.Windows.Forms.ProgressBar ProgressBar1;
+        private System.Windows.Forms.Button btn_trocar;
     }
 }
 

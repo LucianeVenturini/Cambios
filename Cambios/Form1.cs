@@ -7,31 +7,36 @@ namespace Cambios
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-
+    
     public partial class Form1 : Form
     {
 
         #region Atributos
+        private List<Rate> Rates; //para substituir -> public List<Rate> Rates { get; set; } = new List<Rate>();
+
         //definir um atributo Network service
         private NetworkService networService;
 
         //definir um atributo ApiService
         private ApiService apiService;
 
+        private DialogService dialogService;
+
         #endregion
 
-        public List<Rate> Rates { get; set; } = new List<Rate>();
 
         public Form1()
         {
             InitializeComponent();
             networService = new NetworkService(); //Estanciar objeto
             apiService = new ApiService();
+            dialogService = new DialogService();
             LoadRates();//para criar as taxas
         }
 
         private async void LoadRates()
         {
+            bool load;
           
             lbl_resultados.Text = "A atualizar taxas...";
 
@@ -39,14 +44,25 @@ namespace Cambios
 
             if (!connection.IsSucess) // se não tiver conexão
             {
-                MessageBox.Show(connection.Message);
-                return; //saí do método e não entra na API
+                LoadLocalRates(); //Base de dados
+                load = false; //não consegiu carregar
             }
             else
             {
-                await LoadApiRates();
+                await LoadApiRates(); //ler a Api
+                load = true;//load passa a true
             }
-            
+            //Pode ocorrer que a primeira vez a base de dados pode não estar preenchida
+            if (Rates.Count == 0) // minhas listas não foram carregadas
+            {
+                lbl_resultados.Text = "Não há ligação a Internet" + Environment.NewLine +
+                     "a não foram préviamente carregadas as taxas." + Environment.NewLine +
+                     "Tente mais tarde!";
+
+                return;
+            }
+
+
             cb_origem.DataSource = Rates; //lista rates
             //para aparecer os nomes adequadamente vamos a class rates
             //criar um override ou então podemos fazer da seguinte forma:
@@ -61,10 +77,27 @@ namespace Cambios
 
             //desta forma a origem e destino vão apresentar a mesma moeda. 
             //Para resolver isto vamos fazer um cb_destino.BindingContext na linha 56
+                     
+          
+            lbl_resultados.Text = "Taxas atualizadas...";
+
+            if (load)
+            {
+                lbl_status.Text = string.Format("Taxas carregadas da internet em {0:F}", DateTime.Now);
+            }
+            else
+            {
+                lbl_status.Text = string.Format("Taxas carregadas da Base de Dados.");
+            }
 
             ProgressBar1.Value = 100;
+            btn_converter.Enabled = true;
+            btn_trocar.Enabled = true;
+        }
 
-            lbl_resultados.Text = "Taxas carregadas...";
+        private void LoadLocalRates() //implementar a base de dados
+        {
+            MessageBox.Show("Não está implementado");
         }
 
         private async Task LoadApiRates() //porque na API tbm foi defenido como async
@@ -75,6 +108,67 @@ namespace Cambios
 
             Rates = (List<Rate>)response.Result;
             
+        }
+
+        private void btn_converter_Click(object sender, EventArgs e)
+        {
+            Converter();
+        }
+
+        private void Converter()
+        {
+            //validações
+            if (string.IsNullOrEmpty(tb_valor.Text))
+            {
+                dialogService.ShowMessage("Erro", "Insira um valor a converter");
+                return;
+            }
+            decimal valor;
+            if (!decimal.TryParse(tb_valor.Text, out valor))
+            {
+                dialogService.ShowMessage("Erro de conversão", "valor terá que ser numérico");
+
+                return;
+            }
+            //Validar que tenho as moedas escolhidas
+            if (cb_origem.SelectedItem == null)
+            {
+                dialogService.ShowMessage("Erro", "Tem que escolher uma moeda a converter");
+                return;
+            }
+            if (cb_destino.SelectedItem == null)
+            {
+                dialogService.ShowMessage("Erro", "Tem que escolher uma moeda de destino para converter");
+                return;
+            }
+
+            var taxaOrigem = (Rate) cb_origem.SelectedItem;
+
+            var taxaDestino = (Rate)cb_destino.SelectedItem;
+
+            var valorConvertido = valor / (decimal)taxaOrigem.TaxRate * (decimal)taxaDestino.TaxRate;
+
+            lbl_resultados.Text = string.Format("{0} {1:C2} = {2} {3:C2}", 
+                taxaOrigem.Code, 
+                valor, 
+                taxaDestino.Code, 
+                valorConvertido);
+        }
+
+        private void btn_trocar_Click(object sender, EventArgs e)
+        {
+            Trocar();
+        }
+
+        private void Trocar()
+        {
+            var aux = cb_origem.SelectedItem;
+
+            cb_origem.SelectedItem = cb_destino.SelectedItem;
+
+            cb_destino.SelectedItem = aux;
+
+            Converter();
         }
     }
 }
