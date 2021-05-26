@@ -1,13 +1,13 @@
-﻿
+﻿using Cambios.Modelos;
+using Cambios.Modelos.Servicos;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
 namespace Cambios
 {
-    using Cambios.Modelos;
-    using Cambios.Modelos.Servicos;
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using System.Windows.Forms;
-    
+        
     public partial class Form1 : Form
     {
 
@@ -22,6 +22,8 @@ namespace Cambios
 
         private DialogService dialogService;
 
+        private DataService dataService;
+
         #endregion
 
 
@@ -31,6 +33,7 @@ namespace Cambios
             networService = new NetworkService(); //Estanciar objeto
             apiService = new ApiService();
             dialogService = new DialogService();
+            dataService = new DataService(); //ao fazer isto estou a chamar o contrutor e ele vai logo tratar da pasta
             LoadRates();//para criar as taxas
         }
 
@@ -58,6 +61,8 @@ namespace Cambios
                 lbl_resultados.Text = "Não há ligação a Internet" + Environment.NewLine +
                      "a não foram préviamente carregadas as taxas." + Environment.NewLine +
                      "Tente mais tarde!";
+
+                lbl_status.Text = "Primeira inicialização deverá ter à ligação a internet.";
 
                 return;
             }
@@ -97,7 +102,9 @@ namespace Cambios
 
         private void LoadLocalRates() //implementar a base de dados
         {
-            MessageBox.Show("Não está implementado");
+            //Tenho que buscar a minha lista
+            Rates = dataService.GetData();
+            //MessageBox.Show("Não está implementado");
         }
 
         private async Task LoadApiRates() //porque na API tbm foi defenido como async
@@ -107,7 +114,12 @@ namespace Cambios
             var response = await apiService.GetRates("http://cambios.somee.com", "/api/Rates");
 
             Rates = (List<Rate>)response.Result;
-            
+
+           //Apaga dados antigos da base de dados e coloca os novos dados
+            dataService.DeleteData();
+            dataService.SaveData(Rates);
+
+
         }
 
         private void btn_converter_Click(object sender, EventArgs e)
